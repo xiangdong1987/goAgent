@@ -2,17 +2,14 @@ package main
 
 import (
 	"context"
-	"log"
-	"os"
-	"time"
-
 	"google.golang.org/grpc"
-	pb "nodeAgent/inter/helloworld"
+	"log"
+	pb "nodeAgent/inter"
+	"time"
 )
 
 const (
-	address     = "localhost:50051"
-	defaultName = "world"
+	address = "localhost:50051"
 )
 
 func main() {
@@ -22,16 +19,10 @@ func main() {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	c := pb.NewGreeterClient(conn)
-
-	// Contact the server and print out its response.
-	name := defaultName
-	if len(os.Args) > 1 {
-		name = os.Args[1]
-	}
+	c := pb.NewAgentClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	r, err := c.SayHello(ctx, &pb.HelloRequest{Name: name})
+	r, err := c.Config(ctx, &pb.AgentRequest{Method: "save", Params: "{'path':'/data/config/a.conf','content':'{'a':1}'}"})
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}

@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option go_package = ".;inter";
+
+package inter;
+
+service Agent {
+    // Sends a greeting
+    rpc Config (AgentRequest) returns (AgentReply) {}
+}
+
+message AgentRequest {
+    string method = 1;
+    string params = 2;
+}
+
+message AgentReply {
+    string message = 1;
+}
