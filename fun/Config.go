@@ -1,27 +1,29 @@
 package fun
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"nodeAgent/tools"
+	"path/filepath"
 	"runtime"
 )
 
 func Save(params string) {
-	fmt.Println(params)
-	ficDir := ""
+	fixDir := ""
 	switch runtime.GOOS {
 	case "darwin":
 	case "windows":
-		ficDir = "d:"
+		fixDir = "/data/config/"
 	case "linux":
 	}
 	json := tools.JsonDecode([]byte(params))
-	err := ioutil.WriteFile(ficDir+json["path"].(string), []byte(json["content"].(string)), 0666)
+	allPath := json["path"].(string)
+	fileName := filepath.Base(allPath)
+	path := json["path"].(string)[0 : len(allPath)-len(fileName)]
+	//判断路径是否存在
+	tools.CreateFile(fixDir + path)
+	err := ioutil.WriteFile(fixDir+allPath, []byte(json["content"].(string)), 0666)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(json["path"])
-	fmt.Println(json)
 }

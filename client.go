@@ -24,7 +24,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	params := make(map[string]interface{})
-	params["path"] = "/data/config/a.conf"
+	params["path"] = "a.conf"
 	params["content"] = "{\"a\":1}"
 	r, err := c.Config(ctx, &pb.AgentRequest{Method: "save", Params: tools.JsonEncode(params)})
 	if err != nil {

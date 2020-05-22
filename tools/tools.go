@@ -64,6 +64,30 @@ func SubMbStr(str string, limit int) string {
 	return str
 }
 
+//判断文件或文件夹是否存在
+func IsExist(path string) bool {
+	_, err := os.Stat(path)
+	if err != nil {
+		if os.IsExist(err) {
+			return true
+		}
+		if os.IsNotExist(err) {
+			return false
+		}
+		fmt.Println(err)
+		return false
+	}
+	return true
+}
+
+func CreateFile(filePath string) error {
+	if !IsExist(filePath) {
+		err := os.MkdirAll(filePath, os.ModePerm)
+		return err
+	}
+	return nil
+}
+
 //去除htnl标签
 func TrimHtml(src string) string {
 	//将HTML标签全转换成小写

@@ -6,5 +6,5 @@ import (
 )
 
 func TestConfigSave(t *testing.T) {
-	fun.Save(" {\"content\":\"{\\\"a\\\":1}\",\"path\":\"/data/config/a.conf\"}")
+	fun.Save(" {\"content\":\"{\\\"a\\\":1}\",\"path\":\"server/a.conf\"}")
 }
