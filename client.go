@@ -5,6 +5,7 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	pb "nodeAgent/inter"
+	"nodeAgent/tools"
 	"time"
 )
 
@@ -22,7 +23,10 @@ func main() {
 	c := pb.NewAgentClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	r, err := c.Config(ctx, &pb.AgentRequest{Method: "save", Params: "{'path':'/data/config/a.conf','content':'{'a':1}'}"})
+	params := make(map[string]interface{})
+	params["path"] = "/data/config/a.conf"
+	params["content"] = "{\"a\":1}"
+	r, err := c.Config(ctx, &pb.AgentRequest{Method: "save", Params: tools.JsonEncode(params)})
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}

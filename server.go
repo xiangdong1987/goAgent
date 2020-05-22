@@ -5,6 +5,7 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"net"
+	"nodeAgent/fun"
 	pb "nodeAgent/inter"
 )
 
@@ -18,9 +19,14 @@ type server struct {
 }
 
 func (s *server) Config(ctx context.Context, in *pb.AgentRequest) (*pb.AgentReply, error) {
-
 	log.Printf("Method: %v", in.GetMethod())
 	log.Printf("Params: %v", in.GetParams())
+	switch in.GetMethod() {
+	case "save":
+		fun.Save(in.GetParams())
+	default:
+		log.Println("No method")
+	}
 	return &pb.AgentReply{Message: "Method :" + in.GetMethod() + " Params:" + in.GetParams()}, nil
 }
 
