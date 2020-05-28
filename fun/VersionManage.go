@@ -71,7 +71,7 @@ func CompareCode(path string, commitA string, commitB string) []string {
 		log.Fatal(err)
 	}
 	res := out.String()
-	//fmt.Println(res)
+	fmt.Println(res)
 	files := ParseChange(path, res)
 	return files
 }

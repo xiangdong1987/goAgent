@@ -14,7 +14,7 @@ func TestUpdateVersion(t *testing.T) {
 }
 
 func TestCompareVersion(t *testing.T) {
-	fun.CompareCode("\\Users\\xiangdd\\go\\src\\goAgent\\", "05cc39097af99b00c771205077fe73514c32c322", "464d8e8e24e83397737f3cee4562212f9d13fbae")
+	fun.CompareCode("\\Users\\xiangdd\\go\\src\\goAgent\\", "d77171986f7dcbcd26149e925e451aabf406e998", "ab2fe48429f7a4613e6caedce6fd31ade32e5401")
 }
 
 func TestPackageFiles(t *testing.T) {
