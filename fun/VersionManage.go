@@ -56,7 +56,7 @@ func UpdateCode(path string) {
 	fmt.Println(res)
 }
 
-func CompareCode(path string, commitA string, commitB string) []string {
+func CompareCode(path string, commitA string, commitB string) ([]string, []string) {
 	//判断路径是否存在
 	if !tools.IsExist(path) {
 		log.Fatal("program is not Exist")
@@ -71,14 +71,15 @@ func CompareCode(path string, commitA string, commitB string) []string {
 		log.Fatal(err)
 	}
 	res := out.String()
-	fmt.Println(res)
-	files := ParseChange(path, res)
-	return files
+	files, deleteFiles := ParseChange(path, res)
+	fmt.Println(files, deleteFiles)
+	return files, deleteFiles
 }
 
-func ParseChange(path string, result string) []string {
+func ParseChange(path string, result string) ([]string, []string) {
 	var res []string
 	var fileName string
+	var deleteFile []string
 	strArray := tools.ExplodeStr(result, "\n")
 	for _, v := range strArray {
 		pos := strings.Index(v, "|")
@@ -89,10 +90,15 @@ func ParseChange(path string, result string) []string {
 		//匹配一个或多个空白符的正则表达式
 		reg := regexp.MustCompile("\\s+")
 		fileName = reg.ReplaceAllString(tmpArray[0], "")
-		res = append(res, fileName)
-		fmt.Println(fileName)
+		typeArray := tools.ExplodeStr(tmpArray[1], " ")
+		//判断删除
+		if typeArray[2] == "-" {
+			deleteFile = append(deleteFile, fileName)
+		} else {
+			res = append(res, fileName)
+		}
 	}
-	return res
+	return res, deleteFile
 }
 
 func PackageFiles(path, source, desc string) error {

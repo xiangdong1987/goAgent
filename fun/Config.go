@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"log"
 	"nodeAgent/tools"
+	"os"
 	"path/filepath"
 	"runtime"
 )
@@ -28,4 +29,22 @@ func Save(params string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func CreateDir(path string) error {
+	fileName := filepath.Base(path)
+	filePath := path[0 : len(path)-len(fileName)]
+	//判断路径是否存在并创建
+	return tools.CreateFile(filePath)
+}
+
+func PathExists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
 }
