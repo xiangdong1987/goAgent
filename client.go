@@ -34,32 +34,29 @@ type ClientGRPCConfig struct {
 	Compress        bool
 }
 
-const (
-	address = "localhost:50051"
-)
-
 func main() {
-	uploadFile("/Users/xiangdd/go/src/goAgent/code_version/test.tar.gz", "/Users/xiangdd/go/src/goAgent/code_version/upload/test.tar.gz")
-}
-func config() {
-	// Set up a connection to the server.
-	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
-	if err != nil {
-		log.Fatalf("did not connect: %v", err)
-	}
-	defer conn.Close()
-	c := pb.NewAgentClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
+	//uploadFile("/Users/xiangdd/go/src/goAgent/code_version/test.tar.gz", "/Users/xiangdd/go/src/goAgent/code_version/upload/test.tar.gz")
 	params := make(map[string]interface{})
-	params["path"] = "a.conf"
-	params["content"] = "{\"a\":1}"
-	r, err := c.Config(ctx, &pb.AgentRequest{Method: "save", Params: tools.JsonEncode(params)})
+	params["path"] = "b.conf"
+	params["content"] = "{\"b\":2}"
+	config("save", params)
+}
+
+//配置上传
+func config(method string, params map[string]interface{}) {
+	config := &ClientGRPCConfig{Address: "localhost:50051", ChunkSize: 1024}
+	client, err := NewClientGRPC(*config)
+	if err != nil {
+		log.Fatalf("New connnect fail: %v", err)
+	}
+	Stats, err := client.Config(context.Background(), method, params)
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}
-	log.Printf("Greeting: %s", r.GetMessage())
+	fmt.Println(Stats)
 }
+
+//文件上传
 func uploadFile(file string, path string) {
 	config := &ClientGRPCConfig{Address: "localhost:50051", ChunkSize: 1024}
 	client, err := NewClientGRPC(*config)
@@ -107,21 +104,29 @@ func NewClientGRPC(cfg ClientGRPCConfig) (c ClientGRPC, err error) {
 	default:
 		c.chunkSize = cfg.ChunkSize
 	}
-	c.logger = zerolog.New(os.Stdout).
-		With().
-		Str("from", "client").
-		Logger()
+	c.logger = zerolog.New(os.Stdout).With().Str("from", "client").Logger()
 	c.conn, err = grpc.Dial(cfg.Address, grpcOpts...)
 	if err != nil {
-		err = errors.Wrapf(err,
-			"failed to start grpc connection with address %s",
-			cfg.Address)
+		err = errors.Wrapf(err, "failed to start grpc connection with address %s", cfg.Address)
 		return
 	}
 	c.client = pb.NewAgentClient(c.conn)
 	return
 }
 
+//配置下发
+func (c *ClientGRPC) Config(ctx context.Context, method string, params map[string]interface{}) (reply *pb.AgentReply, err error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	reply, err = c.client.Config(ctx, &pb.AgentRequest{Method: method, Params: tools.JsonEncode(params)})
+	if err != nil {
+		log.Fatalf("could not greet: %v", err)
+	}
+	return reply, err
+}
+
+//文件上传
 func (c *ClientGRPC) UploadFile(ctx context.Context, f string, path string) (stats Stats, err error) {
 	var (
 		writing = true
@@ -137,7 +142,6 @@ func (c *ClientGRPC) UploadFile(ctx context.Context, f string, path string) (sta
 		return
 	}
 	defer file.Close()
-
 	stream, err := c.client.Upload(ctx)
 	if err != nil {
 		err = errors.Wrapf(err,
@@ -146,7 +150,6 @@ func (c *ClientGRPC) UploadFile(ctx context.Context, f string, path string) (sta
 		return
 	}
 	defer stream.CloseSend()
-
 	stats.StartedAt = time.Now()
 	buf = make([]byte, c.chunkSize)
 	for writing {
@@ -169,21 +172,17 @@ func (c *ClientGRPC) UploadFile(ctx context.Context, f string, path string) (sta
 			return
 		}
 	}
-
 	stats.FinishedAt = time.Now()
-
 	status, err = stream.CloseAndRecv()
 	if err != nil {
 		err = errors.Wrapf(err, "failed to receive upstream status response")
 		return
 	}
-
 	if status.Code != pb.UploadStatusCode_Ok {
 		err = errors.Errorf(
 			"upload failed - msg: %s",
 			status.Message)
 		return
 	}
-
 	return
 }
