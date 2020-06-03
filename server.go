@@ -61,6 +61,7 @@ END:
 	return
 }
 
+//配置下发
 func (s *server) Config(ctx context.Context, in *pb.AgentRequest) (*pb.AgentReply, error) {
 	log.Printf("Method: %v", in.GetMethod())
 	log.Printf("Params: %v", in.GetParams())
