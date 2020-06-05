@@ -74,6 +74,20 @@ func (s *server) Config(ctx context.Context, in *pb.AgentRequest) (*pb.AgentRepl
 	return &pb.AgentReply{Message: "Method :" + in.GetMethod() + " Params:" + in.GetParams()}, nil
 }
 
+func keepAlive() {
+	config := fun.EtcConfig{"localhost:2379", 5}
+	c, err := fun.NewEtcClient(config)
+	if err != nil {
+		log.Print(err)
+	}
+	defer c.Client.Close()
+	ip, err := fun.ExternalIP()
+	if err != nil {
+		log.Println(err)
+	}
+	c.EtcKeepAlive("nodes/"+ip.String(), "online", 10)
+}
+
 func main() {
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
@@ -84,4 +98,6 @@ func main() {
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
+	//etcd 保活
+	go keepAlive()
 }
