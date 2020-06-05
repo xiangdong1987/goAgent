@@ -14,6 +14,7 @@ require (
 	github.com/rs/zerolog v1.18.0 // indirect
 	go.etcd.io/etcd v3.3.22+incompatible
 	go.uber.org/zap v1.15.0 // indirect
+	golang.org/x/net v0.0.0-20190620200207-3b0461eec859
 	google.golang.org/grpc v1.25.1
 	google.golang.org/protobuf v1.23.0
 )
