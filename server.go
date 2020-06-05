@@ -21,7 +21,7 @@ const (
 //agentServer
 type server struct {
 	logger zerolog.Logger
-	pb.UnimplementedAgentServer
+	pb.AgentServer
 }
 
 //文件上传
@@ -89,6 +89,7 @@ func keepAlive() {
 }
 
 func main() {
+	go keepAlive()
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
@@ -98,6 +99,4 @@ func main() {
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
-	//etcd 保活
-	go keepAlive()
 }
