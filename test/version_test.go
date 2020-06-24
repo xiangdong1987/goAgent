@@ -37,3 +37,8 @@ func TestGetTags(t *testing.T) {
 func TestCloneProject(t *testing.T) {
 	fun.CloneProject("/Users/xiangdd/", "kaige", "https://gitlab.uuzu.com/platform_src/strategy.kaige68.com.git")
 }
+
+func TestCheckoutTag(t *testing.T) {
+	fun.CheckoutTag("/Users/xiangdd/kaige/", "v1.3.1")
+	fun.CompareCode("\\Users\\xiangdd\\kaige\\", "v1.3.1", "v1.3.0")
+}

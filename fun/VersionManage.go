@@ -67,6 +67,7 @@ func CompareCode(path string, commitA string, commitB string) ([]string, []strin
 		log.Fatal(err)
 	}
 	res := out.String()
+	fmt.Println(res)
 	files, deleteFiles := ParseChange(res)
 	fmt.Println(files, deleteFiles)
 	return files, deleteFiles
@@ -195,4 +196,24 @@ func CloneProject(codePath string, projectPath string, git string) error {
 		return err
 	}
 	return nil
+}
+
+//切换特定分支
+func CheckoutTag(path string, tag string) {
+	//判断路径是否存在
+	if !tools.IsExist(path) {
+		log.Fatal("program is not Exist")
+	}
+	//打开目录
+	cmd := exec.Command("git", "checkout", tag)
+	cmd.Dir = path
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err := cmd.Run()
+	if err != nil {
+		fmt.Println(err)
+		log.Fatal(err)
+	}
+	res := out.String()
+	fmt.Println("xdd", res)
 }
