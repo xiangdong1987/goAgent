@@ -156,3 +156,43 @@ func copyFile(src, dst string) (int64, error) {
 	nBytes, err := io.Copy(destination, source)
 	return nBytes, err
 }
+
+//获取
+func GetAllTags(path string) []string {
+	//判断路径是否存在
+	if !tools.IsExist(path) {
+		log.Fatal("program is not Exist")
+	}
+	//打开目录
+	cmd := exec.Command("git", "tag")
+	cmd.Dir = path
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err := cmd.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+	commit := out.String()
+	tags := tools.ExplodeStr(commit, "\n")
+	tags = tools.Remove(tags, "")
+	return tags
+}
+
+//克隆项目
+func CloneProject(codePath string, projectPath string, git string) error {
+	//判断路径是否存在
+	if !tools.IsExist(codePath) {
+		log.Fatal("program is not Exist")
+	}
+	//打开目录
+	cmd := exec.Command("git", "clone", git, codePath+projectPath)
+	cmd.Dir = codePath
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err := cmd.Run()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}

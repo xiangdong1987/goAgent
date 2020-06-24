@@ -27,3 +27,13 @@ func TestPackageFiles(t *testing.T) {
 	//err:=fun.Tar2("/Users/xiangdd/go/src/goAgent/code_version/tmp", "/Users/xiangdd/go/src/goAgent/code_version/test.tar",false)
 	//fun.CreateTar("../code_version/tmp", "/Users/xiangdd/go/src/goAgent/code_version/test.tar.gz")
 }
+
+func TestGetTags(t *testing.T) {
+	tags := fun.GetAllTags("/Users/xiangdd/kaige")
+	fmt.Printf("v1 type:%T\n", tags[len(tags)-1])
+	fmt.Println(tags[len(tags)-1])
+}
+
+func TestCloneProject(t *testing.T) {
+	fun.CloneProject("/Users/xiangdd/", "kaige", "https://gitlab.uuzu.com/platform_src/strategy.kaige68.com.git")
+}

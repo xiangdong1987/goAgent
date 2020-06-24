@@ -341,3 +341,17 @@ func kSort(array map[string]interface{}) []string {
 	sort.Strings(keys)
 	return keys
 }
+
+func Remove(slice []string, elem string) []string {
+	if len(slice) == 0 {
+		return slice
+	}
+	for i, v := range slice {
+		if v == elem {
+			slice = append(slice[:i], slice[i+1:]...)
+			return Remove(slice, elem)
+			break
+		}
+	}
+	return slice
+}
