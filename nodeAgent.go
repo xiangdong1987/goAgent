@@ -85,7 +85,7 @@ func keepAlive() {
 	if err != nil {
 		log.Println(err)
 	}
-	c.EtcKeepAlive("nodes/"+ip.String(), "online", 10)
+	c.EtcKeepAlive("nodes/"+ip.String(), "1", 10)
 }
 
 func main() {

@@ -24,8 +24,11 @@ func Save(params string) {
 	fileName := filepath.Base(allPath)
 	path := json["path"].(string)[0 : len(allPath)-len(fileName)]
 	//判断路径是否存在并创建
-	tools.CreateFile(fixDir + path)
-	err := ioutil.WriteFile(fixDir+allPath, []byte(json["content"].(string)), 0666)
+	err := tools.CreateFile(fixDir + path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = ioutil.WriteFile(fixDir+allPath, []byte(json["content"].(string)), 0666)
 	if err != nil {
 		log.Fatal(err)
 	}

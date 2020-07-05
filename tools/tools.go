@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/big"
+	"net"
 	"net/http"
 	"os"
 	"reflect"
@@ -27,6 +29,11 @@ func MakeTimestamp() int64 {
 	return time.Now().UnixNano() / int64(time.Millisecond)
 }
 
+func InetAtoN(ip string) int64 {
+	ret := big.NewInt(0)
+	ret.SetBytes(net.ParseIP(ip).To4())
+	return ret.Int64()
+}
 /**
 生成返回给客户端的response
 */
@@ -82,6 +89,7 @@ func IsExist(path string) bool {
 
 func CreateFile(filePath string) error {
 	if !IsExist(filePath) {
+		log.Print(filePath)
 		err := os.MkdirAll(filePath, os.ModePerm)
 		return err
 	}

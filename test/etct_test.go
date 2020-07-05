@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestEtcdPut(t *testing.T) {
+func TestEtcdGet(t *testing.T) {
 	config := fun.EtcConfig{"localhost:2379", 5}
 	c, err := fun.NewEtcClient(config)
 	if err != nil {
@@ -14,6 +14,16 @@ func TestEtcdPut(t *testing.T) {
 	}
 	defer c.Client.Close()
 	c.EtcGet("nodes/", true)
+}
+
+func TestEtcdPut(t *testing.T) {
+	config := fun.EtcConfig{"localhost:2379", 5}
+	c, err := fun.NewEtcClient(config)
+	if err != nil {
+		log.Print(err)
+	}
+	defer c.Client.Close()
+	c.EtcPut("xdd", "123")
 }
 
 func TestEtcdWatch(t *testing.T) {
